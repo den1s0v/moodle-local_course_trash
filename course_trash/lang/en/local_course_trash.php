@@ -36,7 +36,7 @@ $string['restoredcourse'] = 'Course has been restored from the trash: ';
 
 // settings-specific strings
 $string['settings']            = 'Course Trash/Recycle Bin';
-$string['pluginname_desc']     = 'Plugin for securely deleting courses to the “trash” (a special category of courses “To delete”) for the possibility of restoring accidentally deleted courses. Actual deletion of courses will be performed by clearing the specified category of courses.';
+$string['pluginname_desc']     = 'Plugin for safely deleting courses to the “trash” (a special category of courses “To delete”) for the possibility of restoring accidentally deleted courses. Actual deletion of courses will be performed by clearing the specified category of courses.';
 $string['enableplugin']        = 'Enable plugin';
 $string['enableplugin_help']   = 'If disabled, the plugin features will be unavailable';
 $string['coursecat']           = 'Course category';
