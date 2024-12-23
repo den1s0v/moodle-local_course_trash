@@ -72,7 +72,7 @@ if ($hassiteconfig) {
         new lang_string('suspendroles_help', 'local_course_trash'), ['editingteacher', 'teacher']));
 
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/set_enddate',
-        get_string('set_enddate', 'local_course_trash'), get_string('set_enddate_help', 'local_course_trash'), 1));
+        get_string('set_enddate', 'local_course_trash'), '[EXPERIMENTAL FEATURE!] ' . get_string('set_enddate_help', 'local_course_trash'), 0));
 
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/saverestoredata',
         get_string('saverestoredata', 'local_course_trash'), get_string('saverestoredata_help', 'local_course_trash'), 1));
