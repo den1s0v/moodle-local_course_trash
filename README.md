@@ -1,4 +1,4 @@
-# moodle-local_delete_course
+# moodle-local_course_trash
 
 INSTALLATION USING GIT
 
@@ -18,4 +18,10 @@ USAGE
 2) To restore a course, administrator (or user with 'view any course' capability) should open trashed course settings, and follow URL stored there.
 
 3) To delete a course completely, use Moodle's standard course removal features.
+
+
+THANKS
+
+This plugin is based on [local_delete_course by Marcelo A. Rauh Schmitt](https://github.com/marceloschmitt/moodle-local_delete_course).
+
 
