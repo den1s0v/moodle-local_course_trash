@@ -48,6 +48,9 @@ class TransformationSuspendByRole extends Transformation {
         // Получить данные в соответствии с направлением обработки (удаление/восстановление).
         $user_enrols_to_update = null;
 
+        $update_user_enrols = true;
+        $update_enrol_methods = true;
+
         if ($course_transformer->is_trashing) {
             $target_enrol_status = ENROL_USER_SUSPENDED;
             
@@ -56,12 +59,12 @@ class TransformationSuspendByRole extends Transformation {
             switch ($suspendmode) {
                 case LOCAL_COURSE_TRASH_SUSPEND_ANYONE:
                     self::enrols_on_course($course_transformer->course->id);
+                    $update_user_enrols = false;
                     break;
                     
                 case LOCAL_COURSE_TRASH_SUSPEND_SELF_AND_ROLES:
                     $suspendroles_str = get_config('local_course_trash', 'suspendroles');  // E.g. string(3) "3,4".
 
-                    // $suspendroles = $suspendroles_str;
                     $suspendroles = explode(',', $suspendroles_str);
 
                     $user_enrols_to_update = self::enrols_on_course($course_transformer->course->id, $suspendroles);
@@ -69,6 +72,7 @@ class TransformationSuspendByRole extends Transformation {
                 
                 case LOCAL_COURSE_TRASH_SUSPEND_SELF_ONLY:
                     $user_enrols_to_update = self::enrols_on_course($course_transformer->course->id, [], true);
+                    $update_enrol_methods = false;
                     break;
                 
                 case LOCAL_COURSE_TRASH_SUSPEND_NO_ONE:
@@ -91,7 +95,16 @@ class TransformationSuspendByRole extends Transformation {
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.
         if ($user_enrols_to_update) {
 
-            self::update_status_in_enrols($user_enrols_to_update, $target_enrol_status);
+            $n = count($user_enrols_to_update);
+            $course_transformer->log("Updating $n enrolments.");
+
+            if ($update_user_enrols) {
+                self::update_user_enrols_status($user_enrols_to_update, $target_enrol_status);
+            }
+
+            if ($update_enrol_methods) {
+                self::update_enrols_status($user_enrols_to_update, $target_enrol_status);
+            }
 
             // Extract ids of user_enrolments rows.
             $user_enrol_ids = array_keys($user_enrols_to_update);
@@ -174,9 +187,9 @@ class TransformationSuspendByRole extends Transformation {
 
         return $user_enrols;
     }
+
     
-    
-    private static function update_status_in_enrols($user_enrols_to_update, $target_enrol_status) {
+    private static function update_user_enrols_status($user_enrols_to_update, $target_enrol_status) {
         global $DB;
 
         $enrol_plugins_cache = [];
@@ -193,6 +206,39 @@ class TransformationSuspendByRole extends Transformation {
 
             $enrol_plugin->update_user_enrol($enrol_plus_userid, $enrol_plus_userid->userid, $target_enrol_status);
         }
+    }
 
+    
+    private static function update_enrols_status($enrols_to_update, $target_enrol_status) {
+        global $DB;
+
+        // Remove duplicates of course's enrol methods.
+        $unique_enrol_instances = [];
+        foreach ($enrols_to_update as $enrol_plus_userid) {
+            $instance = $enrol_plus_userid;
+            unset($instance->userid);
+            unset($instance->ue_id);
+            
+            $unique_enrol_instances[$instance->id] = $instance;
+        }
+
+        $enrol_plugins_cache = [];
+
+        foreach ($unique_enrol_instances as $instance) {
+
+            if ($instance->status == $target_enrol_status)
+                continue;  // Already in target state.
+            
+            $enrol_plugin_name = $instance->enrol;
+            if (!array_key_exists($enrol_plugin_name, $enrol_plugins_cache)) {
+                // Retrieve & cache enrol plugin.
+                $enrol_plugin = enrol_get_plugin($enrol_plugin_name);
+                $enrol_plugins_cache[$enrol_plugin_name] = $enrol_plugin;
+            } else {
+                $enrol_plugin = $enrol_plugins_cache[$enrol_plugin_name];
+            }
+
+            $enrol_plugin->update_status($instance, $target_enrol_status);
+        }
     }
 }
