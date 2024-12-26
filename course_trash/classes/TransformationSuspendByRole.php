@@ -126,7 +126,7 @@ class TransformationSuspendByRole extends Transformation {
         $role_inparams = [];
         if ($role_ids) {
             [$insql, $role_inparams] = $DB->get_in_or_equal($role_ids, SQL_PARAMS_NAMED, 'role');
-            $role_filter = "(e.roleid $insql)";
+            $role_filter = "(ra.roleid $insql)";
         } elseif ($role_ids === null) {
             $role_filter = '1';
         } else/* if ($role_ids == []) */ {
@@ -149,27 +149,28 @@ class TransformationSuspendByRole extends Transformation {
             $ue_ids_filter = '0';
         }
         
-        // Query DB directly.
-        $user_enrols = $DB->get_records_sql("SELECT ue.id as ue_id, e.*, ue.userid
+        $sql = "SELECT ue.id as ue_id, e.*, ue.userid
         FROM {user_enrolments} ue
         JOIN {enrol} e ON ue.enrolid = e.id
+        LEFT JOIN {role_assignments} ra ON (ue.userid = ra.userid AND ue.enrolid = ra.itemid)
         WHERE e.courseid = :course_id
         AND ($role_filter OR $user_filter OR $ue_ids_filter)
         AND ue.status = :ue_status
-        ", $role_inparams + $ue_inparams + [
+        ";
+        $sql_params = $role_inparams + $ue_inparams + [
             'course_id' => $course_id, 
             // 'role_ids' => $role_ids, 
             'ue_status' => $ue_status, 
             'user_id' => $USER->id, 
             // 'explicit_ue_ids' => $explicit_ue_ids, 
-        ]);
+        ];
 
-        // $ue_ids = [];
-        // if ($rows) {
-        //     foreach($rows as $id) {
-        //         $ue_ids []= $id;
-        //     }
-        // }
+        // var_dump($sql);
+        // echo '<br>';
+        // var_dump($sql_params);
+
+        // Query DB directly.
+        $user_enrols = $DB->get_records_sql($sql, $sql_params);
 
         return $user_enrols;
     }

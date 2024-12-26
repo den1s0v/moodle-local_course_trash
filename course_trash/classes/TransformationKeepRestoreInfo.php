@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class TransformationKeepRestoreInfo extends Transformation {
 
-    private const STORED_DATA_MARK_BEGIN = '<br>THIS COURSE IS PLANNED FOR FOR REMOVAL<br>';
+    private const STORED_DATA_MARK_BEGIN = '<br>THIS COURSE IS PLANNED FOR REMOVAL<br>';
     private const MARK_JSON_BEGIN = '<br>↓↓↓DO-NOT-CHANGE-THIS↓↓↓<br><pre>';
     private const MARK_JSON_END = '</pre>↑↑↑DO-NOT-CHANGE-THIS↑↑↑';
 
