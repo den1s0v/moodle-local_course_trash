@@ -70,13 +70,17 @@ class TransformationKeepRestoreInfo extends Transformation {
         if ($course_transformer->is_trashing) {
             // Append summary with backup data.
 
+            $currentDateTime = date('Y-m-d H:i:s');
+
             $url = self::format_url_for_restoring($course_transformer->course->id);
             $restore_url_tag = "<a href='$url'> Restore course / Восстановить курс </a>: $url";
 
             $text_with_json = self::format_json_to_text($course_transformer->data['to_keep']);
             
             // Concat main parts.
-            $text_to_store = self::STORED_DATA_MARK_BEGIN . $restore_url_tag . $text_with_json;
+            $text_to_store = self::STORED_DATA_MARK_BEGIN . 
+                $currentDateTime . '<p>' .
+                $restore_url_tag . $text_with_json;
 
             $summary = $course_transformer->course->summary;
 
