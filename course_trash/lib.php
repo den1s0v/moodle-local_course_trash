@@ -49,15 +49,15 @@ function local_course_trash_extend_navigation_course($navigation, $course, $cont
         if ($can_trash) {
             $base_url = '/local/course_trash/course_trash.php';
             $menuitem_string_id = 'course_trash';
+            $pix = 'i/delete';
         } else {
             $base_url = '/local/course_trash/restore.php';
             $menuitem_string_id = 'course_restore';
+            $pix = 'e/undo';
         }
 
         $url = new moodle_url($base_url, ['id' => $course->id]);
         $name = get_string($menuitem_string_id, 'local_course_trash');
-        // // Add ellipsis indicating further confirmation.
-        // $name = $name.'…';
-        $navigation->add($name, $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/delete', ''));
+        $navigation->add($name, $url, navigation_node::TYPE_SETTING, null, null, new pix_icon($pix, ''));
     }
 }
