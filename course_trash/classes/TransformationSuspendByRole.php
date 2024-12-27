@@ -162,10 +162,15 @@ class TransformationSuspendByRole extends Transformation {
             $ue_ids_filter = '0';
         }
         
-        $sql = "SELECT ue.id as ue_id, e.*, ue.userid
+        $sql = "SELECT DISTINCT ue.id as ue_id, e.*, ue.userid
         FROM {user_enrolments} ue
         JOIN {enrol} e ON ue.enrolid = e.id
-        LEFT JOIN {role_assignments} ra ON (ue.userid = ra.userid AND ue.enrolid = ra.itemid)
+        JOIN {context} cx ON (cx.instanceid = e.courseid
+        AND cx.contextlevel = 50)  -- COURSE_CONTEXT = 50
+        LEFT JOIN
+        {role_assignments} ra ON (ue.userid = ra.userid
+            -- AND ue.enrolid = ra.itemid
+            AND cx.id = ra.contextid)
         WHERE e.courseid = :course_id
         AND ($role_filter OR $user_filter OR $ue_ids_filter)
         AND ue.status = :ue_status
