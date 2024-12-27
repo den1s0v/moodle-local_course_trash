@@ -34,6 +34,12 @@ function local_course_trash_extend_navigation_course($navigation, $course, $cont
 
     if (!$PAGE->course || $PAGE->course->id == 1) {
         return;
+    }    
+    
+    require_once 'locallib.php';
+    if ( ! local_course_trash_enabled()) {
+        // Do not append course menu.
+        return;
     }
 
     if (has_capability('local/course_trash:manage', $context)) {

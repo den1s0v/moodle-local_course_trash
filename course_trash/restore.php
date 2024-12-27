@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prepare
+ * Restore course from trash WITHOUT confirmation.
  *
  * @package     local_course_trash
  * @copyright   2021 Marcelo A. Rauh Schmitt
@@ -27,7 +27,7 @@ require_once(__DIR__.'/../../config.php');
 // require_once($CFG->libdir.'/formslib.php');
 // require_once('classes/confirm_form.php');
 
-// require_once 'locallib.php';
+require_once 'locallib.php';
 use local_course_trash\CourseTransformer;
 
 
@@ -43,6 +43,11 @@ if ($id) {
         throw new moodle_exception('invalidcourseid');
     }
     require_login($course);
+
+    if ( ! local_course_trash_enabled()) {
+        print_error('function is not avaiable', 'local_course_trash', $CFG->wwwroot.'/course/view.php?id='.$course->id);
+    }
+
     $context = context_course::instance($course->id);
     require_capability('local/course_trash:manage', $context);
 } else {
