@@ -53,42 +53,19 @@ class TransformationSuspendByRole extends Transformation {
 
         if ($course_transformer->is_trashing) {
             $target_enrol_status = ENROL_USER_SUSPENDED;
+
+            [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods] = self::find_user_enrols_to_update($course_transformer->course->id);
             
-            $suspendmode = get_config('local_course_trash', 'suspendmode');
-
-            switch ($suspendmode) {
-                case LOCAL_COURSE_TRASH_SUSPEND_ANYONE:
-                    self::enrols_on_course($course_transformer->course->id);
-                    $update_user_enrols = false;
-                    break;
-                    
-                case LOCAL_COURSE_TRASH_SUSPEND_SELF_AND_ROLES:
-                    $suspendroles_str = get_config('local_course_trash', 'suspendroles');  // E.g. string(3) "3,4".
-
-                    $suspendroles = explode(',', $suspendroles_str);
-
-                    $user_enrols_to_update = self::enrols_on_course($course_transformer->course->id, $suspendroles);
-                    break;
-                
-                case LOCAL_COURSE_TRASH_SUSPEND_SELF_ONLY:
-                    $user_enrols_to_update = self::enrols_on_course($course_transformer->course->id, [], true);
-                    $update_enrol_methods = false;
-                    break;
-                
-                case LOCAL_COURSE_TRASH_SUSPEND_NO_ONE:
-                    $user_enrols_to_update = [];
-                    break;
-                
-                default:
-                    throw new \RuntimeException("Invalid local_course_trash / suspendmode value: $suspendmode", 1);
-            }
-
         } else {
             $target_enrol_status = ENROL_USER_ACTIVE;
 
             $user_enrol_ids = $course_transformer->data['restored']['user_enrols_suspended'] ?: null;
             if ($user_enrol_ids) {
+                // Restore only 'ue's suspended while trashing.
                 $user_enrols_to_update = self::enrols_on_course($course_transformer->course->id, [], false, $user_enrol_ids, ENROL_USER_SUSPENDED);
+            } else {
+                // Restore what is on plugin settings.
+                [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods] = self::find_user_enrols_to_update($course_transformer->course->id, ENROL_USER_SUSPENDED);
             }
         }
         
@@ -191,6 +168,47 @@ class TransformationSuspendByRole extends Transformation {
         $user_enrols = $DB->get_records_sql($sql, $sql_params);
 
         return $user_enrols;
+    }
+
+    
+    private static function find_user_enrols_to_update($course_id, $enrol_status = ENROL_USER_ACTIVE) {
+        global $CFG;
+
+        $user_enrols_to_update = null;
+
+        $update_user_enrols = true;
+        $update_enrol_methods = true;
+
+        $suspendmode = get_config('local_course_trash', 'suspendmode');
+
+        switch ($suspendmode) {
+            case LOCAL_COURSE_TRASH_SUSPEND_ANYONE:
+                $user_enrols_to_update = self::enrols_on_course($course_id, null, false /* No matter */, null, $enrol_status);
+                $update_user_enrols = false;
+                break;
+                
+            case LOCAL_COURSE_TRASH_SUSPEND_SELF_AND_ROLES:
+                $suspendroles_str = get_config('local_course_trash', 'suspendroles');  // E.g. string(3) "3,4".
+
+                $suspendroles = explode(',', $suspendroles_str);
+
+                $user_enrols_to_update = self::enrols_on_course($course_id, $suspendroles, true, null, $enrol_status);
+                break;
+            
+            case LOCAL_COURSE_TRASH_SUSPEND_SELF_ONLY:
+                $user_enrols_to_update = self::enrols_on_course($course_id, [], true, null, $enrol_status);
+                $update_enrol_methods = false;
+                break;
+            
+            case LOCAL_COURSE_TRASH_SUSPEND_NO_ONE:
+                $user_enrols_to_update = [];
+                break;
+            
+            default:
+                throw new \RuntimeException("Invalid local_course_trash / suspendmode value: $suspendmode", 1);
+        }
+        
+        return [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods];
     }
 
     
