@@ -138,6 +138,14 @@ class TransformationSuspendByRole extends Transformation {
         } else {
             $ue_ids_filter = '0';
         }
+
+        // Insert a condition if ue_status is given.
+        if ($ue_status == ENROL_USER_ACTIVE) {
+            $status_filter = 'ue.status = :ue_status AND e.status = :ue_status2';
+        } else {
+            $status_filter = 'ue.status = :ue_status OR e.status = :ue_status2';
+        }
+
         
         $sql = "SELECT DISTINCT ue.id as ue_id, e.*, ue.userid
         FROM {user_enrolments} ue
@@ -150,12 +158,13 @@ class TransformationSuspendByRole extends Transformation {
             AND cx.id = ra.contextid)
         WHERE e.courseid = :course_id
         AND ($role_filter OR $user_filter OR $ue_ids_filter)
-        AND ue.status = :ue_status
+        AND ($status_filter)
         ";
         $sql_params = $role_inparams + $ue_inparams + [
             'course_id' => $course_id, 
             // 'role_ids' => $role_ids, 
             'ue_status' => $ue_status, 
+            'ue_status2' => $ue_status, 
             'user_id' => $USER->id, 
             // 'explicit_ue_ids' => $explicit_ue_ids, 
         ];
@@ -207,7 +216,7 @@ class TransformationSuspendByRole extends Transformation {
             default:
                 throw new \RuntimeException("Invalid local_course_trash / suspendmode value: $suspendmode", 1);
         }
-        
+
         return [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods];
     }
 
