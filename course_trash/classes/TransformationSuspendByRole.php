@@ -59,7 +59,10 @@ class TransformationSuspendByRole extends Transformation {
         } else {
             $target_enrol_status = ENROL_USER_ACTIVE;
 
-            $user_enrol_ids = $course_transformer->data['restored']['user_enrols_suspended'] ?: null;
+            $key = 'user_enrols_suspended';
+            $restored_data = &$course_transformer->data['restored'];
+            $user_enrol_ids = array_key_exists($key, $restored_data) ? $restored_data[$key] : null;
+
             if ($user_enrol_ids) {
                 // Restore only 'ue's suspended while trashing.
                 $user_enrols_to_update = self::enrols_on_course($course_transformer->course->id, [], false, $user_enrol_ids, ENROL_USER_SUSPENDED);

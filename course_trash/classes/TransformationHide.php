@@ -49,7 +49,10 @@ class TransformationHide extends Transformation {
         if ($course_transformer->is_trashing) {
             $visible = 0;
         } else {
-            $visible = $course_transformer->data['restored']['visible'] ?: null;
+            $restored_data = &$course_transformer->data['restored'];
+
+            $key = 'visible';
+            $visible = array_key_exists($key, $restored_data) ? !!$restored_data[$key] : null;
         }
         
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.

@@ -57,8 +57,13 @@ class TransformationSetEndDate extends Transformation {
                 $startdate = $enddate - 365 * 86400 /*DAY_SECONDS == 60*60*24*/;
             }
         } else {
-            $enddate = $course_transformer->data['restored']['enddate'] ?: null;
-            $startdate = $course_transformer->data['restored']['startdate'] ?: null;
+            $restored_data = &$course_transformer->data['restored'];
+
+            $key = 'enddate';
+            $enddate = array_key_exists($key, $restored_data) ? !!$restored_data[$key] : null;
+
+            $key = 'startdate';
+            $startdate = array_key_exists($key, $restored_data) ? !!$restored_data[$key] : null;
         }
         
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.

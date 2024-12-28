@@ -49,7 +49,10 @@ class TransformationMoveToCategory extends Transformation {
         if ($course_transformer->is_trashing) {
             $target_coursecat = get_config('local_course_trash', 'coursecat');
         } else {
-            $target_coursecat = $course_transformer->data['restored']['category'] ?: null;
+            $restored_data = &$course_transformer->data['restored'];
+
+            $key = 'category';
+            $target_coursecat = array_key_exists($key, $restored_data) ? $restored_data[$key] : null;
         }
         
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.
