@@ -23,12 +23,11 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-require_once 'locallib.php';
 
 
 if ($hassiteconfig) {
     global $CFG;
-    require_once($CFG->dirroot . '/local/justadminer/lib.php');
+    require_once($CFG->dirroot . '/local/course_trash/locallib.php');
 
     $settings = new admin_settingpage('local_course_trash', new lang_string('settings', 'local_course_trash'));
     $ADMIN->add('localplugins', $settings);
