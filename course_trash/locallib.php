@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 
+// Constants for suspending-users mode in a trashed course.
 const LOCAL_COURSE_TRASH_SUSPEND_ANYONE = 3;
 const LOCAL_COURSE_TRASH_SUSPEND_SELF_AND_ROLES = 2;
 const LOCAL_COURSE_TRASH_SUSPEND_SELF_ONLY = 1;
 const LOCAL_COURSE_TRASH_SUSPEND_NO_ONE = 0;
+
 
 function local_course_trash_enabled() {
     global $CFG;

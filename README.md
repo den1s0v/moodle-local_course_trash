@@ -1,5 +1,10 @@
 # moodle-local_course_trash
 
+Current version: 1.0
+
+(Plans for v2.0: personal sourse trash with ability to restore & autodelete on timeout, e.g. 30 days, via scheduled task. Also logging the deletion events into DB.)
+
+
 INSTALLATION USING GIT
 
 1) Execute "git clone https://github.com/den1s0v/moodle-local_course_trash.git".
@@ -24,4 +29,8 @@ THANKS
 
 This plugin is based on [local_delete_course by Marcelo A. Rauh Schmitt](https://github.com/marceloschmitt/moodle-local_delete_course).
 
+
+Version log
+
+Version 1.0: Simply hide the course & move course to a dedicated category.
 
