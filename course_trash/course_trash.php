@@ -65,10 +65,12 @@ $PAGE->set_pagelayout('admin');
 
 $form = new local_course_trash_confirm_form('course_trash.php?id='.$id, ['course' => $course]);
 
-// Se foi cancelado.
 if ($form->is_cancelled()) {
+    // Form was canceled.
     redirect($CFG->wwwroot.'/course/view.php?id='.$course->id);
-} else if ($data = $form->get_data()) { // Se foi confirmado.
+
+} else if ($data = $form->get_data()) {
+    // Form was confirmed.
     $strrestoringcourse = get_string("deletingcourse", "local_course_trash") . " " .
         $course->shortname;
     // $categoryurl = new moodle_url('/course/index.php', ['categoryid' => $course->category]);
@@ -81,23 +83,25 @@ if ($form->is_cancelled()) {
     echo $OUTPUT->heading($strrestoringcourse);
     // This might take a while. Raise the execution time limit.
     core_php_time_limit::raise();
-    // We do this here because it spits out feedback as it goes.
+    // We do this here because it splits out feedback as it goes.
     // local_course_trash_trash_course($course);
 
     $transformer = new CourseTransformer($course, true);
     $transformer->transform_course();
 
     // echo $transformer->log_text;
-    
+
     echo $OUTPUT->heading(get_string("deletedcourse", "local_course_trash") . $course->shortname);
     // Update course count in categories.
     // fix_course_sortorder();
     echo $OUTPUT->continue_button($home_url);
     echo $OUTPUT->footer();
     exit; // We must exit here!!!
+
+} else {
+    // If it was the first time.
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('course_trash', 'local_course_trash'));
+    $form->display();
+    echo $OUTPUT->footer();
 }
-// Se foi a primeira vez.
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('course_trash', 'local_course_trash'));
-$form->display();
-echo $OUTPUT->footer();
