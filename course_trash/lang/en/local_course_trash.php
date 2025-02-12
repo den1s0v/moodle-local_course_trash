@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
-$string['alert'] = 'Attention! If you continue this operation, the course will be sent to the trash, from where it will be permanently deleted (usually it will take at least 7 days before this happens). <p> You will lose access to the course and its content, including all materials, assignments, answers, and student grades. <p>If you later wish to restore the course, please contact your department administrator.';
+$string['alert'] = 'Attention! If you continue this operation, you will lose access to the course and its content, including all materials, assignments, answers, and student grades. <p> If you later wish to restore the course, please contact your department administrator.';
 // $string['alert_old'] = 'Attention! If you continue this operation the course you are in will be deleted. Think about downloading a backup.';
 $string['course_trash'] = 'Trash course';
 $string['course_restore'] = 'Restore trashed course';
