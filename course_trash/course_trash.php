@@ -72,7 +72,8 @@ if ($form->is_cancelled()) {
     $strrestoringcourse = get_string("deletingcourse", "local_course_trash") . " " .
         $course->shortname;
     // $categoryurl = new moodle_url('/course/index.php', ['categoryid' => $course->category]);
-    $course_url = new moodle_url('/course/view.php', ['id' => $course->id]);
+    // $course_url = new moodle_url('/course/view.php', ['id' => $course->id]);
+    $home_url = new moodle_url('/');
     $PAGE->navbar->add($strrestoringcourse);
     $PAGE->set_title("$SITE->shortname: $strrestoringcourse");
     $PAGE->set_heading($SITE->fullname);
@@ -91,7 +92,7 @@ if ($form->is_cancelled()) {
     echo $OUTPUT->heading(get_string("deletedcourse", "local_course_trash") . $course->shortname);
     // Update course count in categories.
     // fix_course_sortorder();
-    echo $OUTPUT->continue_button($course_url);
+    echo $OUTPUT->continue_button($home_url);
     echo $OUTPUT->footer();
     exit; // We must exit here!!!
 }
