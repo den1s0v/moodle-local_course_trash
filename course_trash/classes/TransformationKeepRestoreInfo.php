@@ -108,7 +108,9 @@ class TransformationKeepRestoreInfo extends Transformation {
     }
 
     private static function format_json_to_text($arr): string {
-        return self::MARK_JSON_BEGIN . json_encode($arr, JSON_PRETTY_PRINT | JSON_INVALID_UTF8_IGNORE) . self::MARK_JSON_END;
+        // $json_string = json_encode($arr, JSON_PRETTY_PRINT | JSON_INVALID_UTF8_IGNORE);
+        $json_string = json_encode($arr, JSON_INVALID_UTF8_IGNORE);
+        return self::MARK_JSON_BEGIN . $json_string . self::MARK_JSON_END;
     }
 
     private static function extract_data_from_text($string): array {

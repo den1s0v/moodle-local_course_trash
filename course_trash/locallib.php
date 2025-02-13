@@ -29,3 +29,22 @@ function local_course_trash_enabled() {
 
     return $enabled;
 }
+
+/** Check if the course is in target course category for trashed courses.
+ * Hidden status is not used since many normal courses can be hidden. */
+function local_course_trash_is_course_trashed($course) {
+    global $CFG;
+
+    // Plugin setting names:
+    // movetocategory
+    //     coursecat
+    // hidecourse.
+
+    $config = get_config('local_course_trash');
+
+    if ($config->movetocategory && $config->coursecat == $course->category) {
+        return true;
+    }
+
+    return false;
+}

@@ -45,7 +45,7 @@ if ( ! local_course_trash_enabled()) {
 
     if (has_capability('local/course_trash:manage', $context)) {
 
-        $can_trash = $course->visible;
+        $can_trash = ! local_course_trash_is_course_trashed($course);
 
         if ($can_trash) {
             $base_url = '/local/course_trash/course_trash.php';
