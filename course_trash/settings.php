@@ -76,5 +76,11 @@ if ($hassiteconfig) {
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/saverestoredata',
         get_string('saverestoredata', 'local_course_trash'), get_string('saverestoredata_help', 'local_course_trash'), 1));
 
-  
+
+    $settings->add(new admin_setting_heading('local_course_trash_settings', get_string('heading_developer', 'local_course_trash'), get_string('heading_developer_info', 'local_course_trash')));
+
+    $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/verbose_logging',
+        get_string('verbose_logging', 'local_course_trash'), get_string('verbose_logging_help', 'local_course_trash'), 0));
+
+
 }

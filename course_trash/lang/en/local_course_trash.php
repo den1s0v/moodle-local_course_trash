@@ -45,6 +45,8 @@ $string['coursecat_help']      = 'The course category "To be deleted". Usually, 
 
 $string['heading_courseoperations']   = 'Course operations';
 $string['heading_courseoperations_info'] = 'What changes will be made to the course when sent to the trash';
+$string['heading_developer']   = 'Developer options';
+$string['heading_developer_info'] = 'Options useful for development/debugging';
 $string['movetocategory']        = 'Move to "To be deleted" category';
 $string['movetocategory_help']   = 'If disabled, the course will remain in its original location';
 $string['hidecourse']           = 'Hide course from students';
@@ -63,4 +65,7 @@ $string['set_enddate']          = 'Set course end date';
 $string['set_enddate_help']     = 'Set the course end date to the current date (this will help later to know when this action was performed)';
 $string['saverestoredata']      = 'Save data for course restoration';
 $string['saverestoredata_help'] = 'If disabled, data about the original location and state of the course will be lost, and automatic course restoration will be impossible. The data is saved in the course description text (summary).';
+
+$string['verbose_logging']        = 'Verbose logging';
+$string['verbose_logging_help']   = 'Display messages about actions completed and/or problems encountered.';
 

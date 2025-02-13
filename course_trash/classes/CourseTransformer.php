@@ -135,6 +135,10 @@ class CourseTransformer {
     }
 
     public function log($message) {
+        if (! get_config('local_course_trash', 'verbose_logging')) {
+            return;
+        }
+
         $s = "<p>$message</p>\n";
         echo $s;
         // $this->log_text .= $s;
