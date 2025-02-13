@@ -44,7 +44,7 @@ class TransformationMoveToCategory extends Transformation {
      */
     public function apply($course_transformer): bool {
         global $DB;
-        
+
         // Получить данные в соответствии с направлением обработки (удаление/восстановление).
         if ($course_transformer->is_trashing) {
             $target_coursecat = get_config('local_course_trash', 'coursecat');
@@ -54,20 +54,20 @@ class TransformationMoveToCategory extends Transformation {
             $key = 'category';
             $target_coursecat = array_key_exists($key, $restored_data) ? $restored_data[$key] : null;
         }
-        
+
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.
         if ($target_coursecat) {
 
             if ($DB->record_exists('course_categories', ['id' => $target_coursecat])) {
-            
+
                 $course_transformer->changed_fields['category'] = $target_coursecat;
                 $course_transformer->data['to_keep']['category'] = $course_transformer->course->category;
 
                 return true;  // Success.
-            
+
             } else {
                     $course_transformer->log('target_coursecat does not exist: ' . var_export($target_coursecat, true));
-                
+
                     return false;  // Fail.
             }
         }

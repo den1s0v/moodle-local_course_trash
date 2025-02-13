@@ -44,7 +44,7 @@ class TransformationHide extends Transformation {
      */
     public function apply($course_transformer): bool {
         global $DB;
-        
+
         // Получить данные в соответствии с направлением обработки (удаление/восстановление).
         if ($course_transformer->is_trashing) {
             $visible = 0;
@@ -54,10 +54,10 @@ class TransformationHide extends Transformation {
             $key = 'visible';
             $visible = array_key_exists($key, $restored_data) ? !!$restored_data[$key] : null;
         }
-        
+
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.
         if ($visible !== null && $visible != $course_transformer->course->visible) {
-            
+
             $course_transformer->changed_fields['visible'] = $visible;
             $course_transformer->data['to_keep']['visible'] = $course_transformer->course->visible;
         }

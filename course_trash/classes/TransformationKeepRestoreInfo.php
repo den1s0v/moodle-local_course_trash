@@ -59,10 +59,10 @@ class TransformationKeepRestoreInfo extends Transformation {
             }
             $course_transformer->data['restored'] = $data;
         }
-        
+
         return true;  // Success.
     }
-        
+
     /**
      * Do something after main processing.
      */
@@ -76,9 +76,9 @@ class TransformationKeepRestoreInfo extends Transformation {
             $restore_url_tag = "<a href='$url'> Restore course / Восстановить курс </a>: $url";
 
             $text_with_json = self::format_json_to_text($course_transformer->data['to_keep']);
-            
+
             // Concat main parts.
-            $text_to_store = self::STORED_DATA_MARK_BEGIN . 
+            $text_to_store = self::STORED_DATA_MARK_BEGIN .
                 $currentDateTime . '<p>' .
                 $restore_url_tag . $text_with_json;
 
@@ -92,7 +92,7 @@ class TransformationKeepRestoreInfo extends Transformation {
             // Clean summary off stored data (if any).
             $summary = $course_transformer->course->summary;
             $updated_summary = self::remove_data_from_text($summary);
-            
+
             if ($summary != $updated_summary) {
                 $course_transformer->changed_fields['summary'] = $updated_summary;
             }
@@ -126,7 +126,7 @@ class TransformationKeepRestoreInfo extends Transformation {
         $data_begin_pos = $begin_pos + strlen(self::MARK_JSON_BEGIN);
         $data_length = $end_pos - $data_begin_pos;
         $json_string = substr($string, $data_begin_pos, $data_length);
-        
+
         return json_decode($json_string, true) ?: [];
         // Tip on json_decode():
         // No exception thrown and `null` is returned in case of invalid JSON data.

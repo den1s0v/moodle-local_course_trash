@@ -46,7 +46,7 @@ class TransformationSetEndDate extends Transformation {
      */
     public function apply($course_transformer): bool {
         global $DB;
-        
+
         // Получить данные в соответствии с направлением обработки (удаление/восстановление).
         if ($course_transformer->is_trashing) {
             $enddate = time();
@@ -65,16 +65,16 @@ class TransformationSetEndDate extends Transformation {
             $key = 'startdate';
             $startdate = array_key_exists($key, $restored_data) ? !!$restored_data[$key] : null;
         }
-        
+
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.
         if ($startdate !== null && $startdate != $course_transformer->course->startdate) {
-            
+
             $course_transformer->changed_fields['startdate'] = $startdate;
             $course_transformer->data['to_keep']['startdate'] = $course_transformer->course->startdate;
         }
 
         if ($enddate !== null && $enddate != $course_transformer->course->enddate) {
-            
+
             $course_transformer->changed_fields['enddate'] = $enddate;
             $course_transformer->data['to_keep']['enddate'] = $course_transformer->course->enddate;
         }

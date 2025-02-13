@@ -35,8 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class CourseTransformer {
     /**
-     * DB record of course being updated. 
-     * 
+     * DB record of course being updated.
+     *
      * It must not be changed while pocessing; all changes should go to `changed_fields`.
      * @var object
      */
@@ -59,7 +59,7 @@ class CourseTransformer {
      * @var array
      */
     public $data;
-    
+
     /**
      * Internal cache of transformations to be applied.
      * @var array
@@ -128,9 +128,9 @@ class CourseTransformer {
 
         if (!$this->_transformations) {
             // Load from plugin config.
-            $this->_transformations = self::init_transformations_from_config( ! $this->is_trashing);  
+            $this->_transformations = self::init_transformations_from_config( ! $this->is_trashing);
             // Note: when restoring, try applying all transformations since plugin settings could be changed since the moment the course was trashed.
-        }    
+        }
         return $this->_transformations;
     }
 
@@ -142,7 +142,7 @@ class CourseTransformer {
 
     private function save_course_to_db() {
         global $DB;
-        
+
         if ($this->changed_fields) {
 
             $fields_to_save = ['id' => $this->course->id] + $this->changed_fields;
@@ -157,23 +157,23 @@ class CourseTransformer {
     private static function init_transformations_from_config($all = false) {
 
         $transformations = [];
-        
+
         // Load from plugin config.
         if ($all || get_config('local_course_trash', 'movetocategory')) {
             $transformations []= new TransformationMoveToCategory();
-        }    
+        }
         if ($all || get_config('local_course_trash', 'hidecourse')) {
             $transformations []= new TransformationHide();
-        }    
+        }
         if ($all || get_config('local_course_trash', 'suspendmode') != LOCAL_COURSE_TRASH_SUSPEND_NO_ONE) {
             $transformations []= new TransformationSuspendByRole();
-        }    
+        }
         if ($all || get_config('local_course_trash', 'set_enddate')) {
             $transformations []= new TransformationSetEndDate();
-        }    
+        }
         if ($all || get_config('local_course_trash', 'saverestoredata')) {
             $transformations []= new TransformationKeepRestoreInfo();
-        }    
+        }
 
 
         return $transformations;

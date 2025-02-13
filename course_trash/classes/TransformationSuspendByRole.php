@@ -44,7 +44,7 @@ class TransformationSuspendByRole extends Transformation {
      */
     public function apply($course_transformer): bool {
         global $DB;
-        
+
         // Получить данные в соответствии с направлением обработки (удаление/восстановление).
         $user_enrols_to_update = null;
 
@@ -55,7 +55,7 @@ class TransformationSuspendByRole extends Transformation {
             $target_enrol_status = ENROL_USER_SUSPENDED;
 
             [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods] = self::find_user_enrols_to_update($course_transformer->course->id);
-            
+
         } else {
             $target_enrol_status = ENROL_USER_ACTIVE;
 
@@ -71,7 +71,7 @@ class TransformationSuspendByRole extends Transformation {
                 [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods] = self::find_user_enrols_to_update($course_transformer->course->id, ENROL_USER_SUSPENDED);
             }
         }
-        
+
         // Выполнить преобразование и зафиксировать информацию о сделанных изменениях.
         if ($user_enrols_to_update) {
 
@@ -94,10 +94,10 @@ class TransformationSuspendByRole extends Transformation {
         } elseif ($user_enrols_to_update != []) {
             $course_id = $course_transformer->course->id;
             $course_transformer->log("`user_enrols_to_update` for course with id=$course_id is empty, probably due to bad sql query.");
-            
+
             return false;  // Fail.
         }
-        
+
         return true;  // Success.
     }
 
@@ -125,14 +125,14 @@ class TransformationSuspendByRole extends Transformation {
         } else/* if ($role_ids == []) */ {
             $role_filter = '0';
         }
-        
+
         // Insert a condition if current $USER should be included.
         if ($include_current_user) {
             $user_filter = 'ue.userid = :user_id';
         } else {
             $user_filter = '0';
         }
-        
+
         // Insert a condition if user_enrolments with given ids should be found.
         $ue_inparams = [];
         if ($explicit_ue_ids) {
@@ -149,7 +149,7 @@ class TransformationSuspendByRole extends Transformation {
             $status_filter = 'ue.status = :ue_status OR e.status = :ue_status2';
         }
 
-        
+
         $sql = "SELECT DISTINCT ue.id as ue_id, e.*, ue.userid
         FROM {user_enrolments} ue
         JOIN {enrol} e ON ue.enrolid = e.id
@@ -164,12 +164,12 @@ class TransformationSuspendByRole extends Transformation {
         AND ($status_filter)
         ";
         $sql_params = $role_inparams + $ue_inparams + [
-            'course_id' => $course_id, 
-            // 'role_ids' => $role_ids, 
-            'ue_status' => $ue_status, 
-            'ue_status2' => $ue_status, 
-            'user_id' => $USER->id, 
-            // 'explicit_ue_ids' => $explicit_ue_ids, 
+            'course_id' => $course_id,
+            // 'role_ids' => $role_ids,
+            'ue_status' => $ue_status,
+            'ue_status2' => $ue_status,
+            'user_id' => $USER->id,
+            // 'explicit_ue_ids' => $explicit_ue_ids,
         ];
 
         // var_dump($sql);
@@ -182,7 +182,7 @@ class TransformationSuspendByRole extends Transformation {
         return $user_enrols;
     }
 
-    
+
     private static function find_user_enrols_to_update($course_id, $enrol_status = ENROL_USER_ACTIVE) {
         global $CFG;
 
@@ -198,7 +198,7 @@ class TransformationSuspendByRole extends Transformation {
                 $user_enrols_to_update = self::enrols_on_course($course_id, null, false /* No matter */, null, $enrol_status);
                 $update_user_enrols = false;
                 break;
-                
+
             case LOCAL_COURSE_TRASH_SUSPEND_SELF_AND_ROLES:
                 $suspendroles_str = get_config('local_course_trash', 'suspendroles');  // E.g. string(3) "3,4".
 
@@ -206,16 +206,16 @@ class TransformationSuspendByRole extends Transformation {
 
                 $user_enrols_to_update = self::enrols_on_course($course_id, $suspendroles, true, null, $enrol_status);
                 break;
-            
+
             case LOCAL_COURSE_TRASH_SUSPEND_SELF_ONLY:
                 $user_enrols_to_update = self::enrols_on_course($course_id, [], true, null, $enrol_status);
                 $update_enrol_methods = false;
                 break;
-            
+
             case LOCAL_COURSE_TRASH_SUSPEND_NO_ONE:
                 $user_enrols_to_update = [];
                 break;
-            
+
             default:
                 throw new \RuntimeException("Invalid local_course_trash / suspendmode value: $suspendmode", 1);
         }
@@ -223,7 +223,7 @@ class TransformationSuspendByRole extends Transformation {
         return [$user_enrols_to_update, $update_user_enrols, $update_enrol_methods];
     }
 
-    
+
     private static function update_user_enrols_status($user_enrols_to_update, $target_enrol_status) {
         global $DB;
 
@@ -243,7 +243,7 @@ class TransformationSuspendByRole extends Transformation {
         }
     }
 
-    
+
     private static function update_enrols_status($enrols_to_update, $target_enrol_status) {
         global $DB;
 
@@ -253,7 +253,7 @@ class TransformationSuspendByRole extends Transformation {
             $instance = $enrol_plus_userid;
             unset($instance->userid);
             unset($instance->ue_id);
-            
+
             $unique_enrol_instances[$instance->id] = $instance;
         }
 
@@ -263,7 +263,7 @@ class TransformationSuspendByRole extends Transformation {
 
             if ($instance->status == $target_enrol_status)
                 continue;  // Already in target state.
-            
+
             $enrol_plugin_name = $instance->enrol;
             if (!array_key_exists($enrol_plugin_name, $enrol_plugins_cache)) {
                 // Retrieve & cache enrol plugin.
