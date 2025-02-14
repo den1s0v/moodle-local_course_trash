@@ -32,7 +32,7 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_course_trash', new lang_string('settings', 'local_course_trash'));
     $ADMIN->add('localplugins', $settings);
 
-    $settings->add(new admin_setting_heading('local_course_trash_settings', get_string('editorcommonsettings' /*reuse from lang/moodle*/), get_string('pluginname_desc', 'local_course_trash')));
+    $settings->add(new admin_setting_heading('local_course_trash_settings_heading1', get_string('editorcommonsettings' /*reuse from lang/moodle*/), get_string('pluginname_desc', 'local_course_trash')));
 
 
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/enableplugin',
@@ -44,7 +44,7 @@ if ($hassiteconfig) {
         new lang_string('coursecat_help', 'local_course_trash'), 1));
 
 
-    $settings->add(new admin_setting_heading('local_course_trash_settings', get_string('heading_courseoperations', 'local_course_trash'), get_string('heading_courseoperations_info', 'local_course_trash')));
+    $settings->add(new admin_setting_heading('local_course_trash_settings_heading2', get_string('heading_courseoperations', 'local_course_trash'), get_string('heading_courseoperations_info', 'local_course_trash')));
 
 
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/movetocategory',
@@ -77,7 +77,7 @@ if ($hassiteconfig) {
         get_string('saverestoredata', 'local_course_trash'), get_string('saverestoredata_help', 'local_course_trash'), 1));
 
 
-    $settings->add(new admin_setting_heading('local_course_trash_settings', get_string('heading_developer', 'local_course_trash'), get_string('heading_developer_info', 'local_course_trash')));
+    $settings->add(new admin_setting_heading('local_course_trash_settings_heading3', get_string('heading_developer', 'local_course_trash'), get_string('heading_developer_info', 'local_course_trash')));
 
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/verbose_logging',
         get_string('verbose_logging', 'local_course_trash'), get_string('verbose_logging_help', 'local_course_trash'), 0));
