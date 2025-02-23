@@ -34,7 +34,30 @@ class local_course_trash_confirm_form extends moodleform {
 
         $mform = $this->_form;
         $course = $this->_customdata['course'];
-        $mform->addElement('static', 'alert', get_string('alert', 'local_course_trash'));
-        $this->add_action_buttons(true, get_string('course_trash', 'local_course_trash'));
+
+        $context = context_course::instance($course->id);
+
+        if (has_capability('local/course_trash:manage', $context)) {
+
+            $mform->addElement('static', 'alert', get_string('alert', 'local_course_trash'));
+        
+            // Добавляем кнопку "Удалить курс в корзину"
+            $mform->addGroup([
+                $mform->createElement('submit', 'submit_trash', get_string('course_trash', 'local_course_trash')),
+                $mform->createElement('cancel')
+            ], 'buttonar2', '', ' ', false);        
+
+        }
+        
+        if (has_capability('local/course_trash:unsubscribe', $context)) {
+            
+            $mform->addElement('static', 'alert', get_string('unsubscribe_alert', 'local_course_trash'));
+
+            // Добавляем кнопку "Отписаться от этого курса"
+            $mform->addGroup([
+                $mform->createElement('submit', 'submit_unsubscribe', get_string('unsubscribe', 'local_course_trash')),
+                $mform->createElement('cancel')
+            ], 'buttonar2', '', ' ', false);
+        }
     }
 }

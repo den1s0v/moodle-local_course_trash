@@ -34,6 +34,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class TransformationSuspendByRole extends Transformation {
 
+    private $suspendmode;
+
+    public function __construct($suspendmode = null) {
+        $this->suspendmode = $suspendmode ?: get_config('local_course_trash', 'suspendmode');
+    }
+
     public function get_name(): string {
         // return 'base Transformation';
         return get_string('suspendmode_help', 'local_course_trash');
@@ -183,7 +189,7 @@ class TransformationSuspendByRole extends Transformation {
     }
 
 
-    private static function find_user_enrols_to_update($course_id, $enrol_status = ENROL_USER_ACTIVE) {
+    private function find_user_enrols_to_update($course_id, $enrol_status = ENROL_USER_ACTIVE) {
         global $CFG;
 
         $user_enrols_to_update = null;
@@ -191,7 +197,7 @@ class TransformationSuspendByRole extends Transformation {
         $update_user_enrols = true;
         $update_enrol_methods = true;
 
-        $suspendmode = get_config('local_course_trash', 'suspendmode');
+        $suspendmode = $this->suspendmode;
 
         switch ($suspendmode) {
             case LOCAL_COURSE_TRASH_SUSPEND_ANYONE:

@@ -28,10 +28,14 @@ $string['course_trash'] = 'Trash course';
 $string['course_restore'] = 'Restore trashed course';
 $string['course_trash:manage'] = 'Trash own courses';
 $string['deletedcourse'] = 'Moved course to trash: ';
-$string['deletingcourse'] = 'Trashing course';
+$string['deletingcourse'] = 'Trashing course ';
 $string['pluginname'] = 'Send course to trash';
 $string['restoringcourse'] = 'Restoring course from the trash';
 $string['restoredcourse'] = 'Course has been restored from the trash: ';
+$string['unsubscribe'] = 'Unsubscribe from this course';
+$string['unsubscribe_alert'] = 'You can unsubscribe from this course. This will not affect other instructors\' access to the course, nor will it affect students.';
+$string['unsubscribedfromcourse'] = 'Suspending the enrolment in course: ';
+$string['unsubscribingfromcourse'] = 'You are successfully unsubscribed from course: ';
 
 
 
@@ -68,4 +72,3 @@ $string['saverestoredata_help'] = 'If disabled, data about the original location
 
 $string['verbose_logging']        = 'Verbose logging';
 $string['verbose_logging_help']   = 'Display messages about actions completed and/or problems encountered.';
-

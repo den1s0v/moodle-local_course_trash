@@ -128,7 +128,7 @@ class CourseTransformer {
 
         if (!$this->_transformations) {
             // Load from plugin config.
-            $this->_transformations = self::init_transformations_from_config( ! $this->is_trashing);
+            $this->_transformations = $this->init_transformations_from_config( ! $this->is_trashing);
             // Note: when restoring, try applying all transformations since plugin settings could be changed since the moment the course was trashed.
         }
         return $this->_transformations;
@@ -158,7 +158,7 @@ class CourseTransformer {
         }
     }
 
-    private static function init_transformations_from_config($all = false) {
+    protected function init_transformations_from_config($all = false) {
 
         $transformations = [];
 

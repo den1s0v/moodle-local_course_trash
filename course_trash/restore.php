@@ -76,7 +76,7 @@ echo $OUTPUT->heading($strrestoringcourse);
 // This might take a while. Raise the execution time limit.
 core_php_time_limit::raise();
 
-// We do this here because it spits out feedback as it goes.
+// We do this here because it splits out feedback as it goes.
 $transformer = new CourseTransformer($course, false);
 $transformer->transform_course();
 

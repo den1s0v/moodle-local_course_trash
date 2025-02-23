@@ -29,6 +29,7 @@ require_once('classes/confirm_form.php');
 
 require_once 'locallib.php';
 use local_course_trash\CourseTransformer;
+use local_course_trash\CourseTransformerUnenrolSelf;
 
 
 $id = required_param('id', PARAM_INT);
@@ -50,7 +51,7 @@ if ($id) {
     }
 
     $context = context_course::instance($course->id);
-    require_capability('local/course_trash:manage', $context);
+    require_capability('local/course_trash:unsubscribe', $context);
 } else {
     require_login();
     throw new moodle_exception('needcourseid');
@@ -71,27 +72,38 @@ if ($form->is_cancelled()) {
 
 } else if ($data = $form->get_data()) {
     // Form was confirmed.
-    $strrestoringcourse = get_string("deletingcourse", "local_course_trash") . " " .
-        $course->shortname;
+
+    if (isset($data->submit_trash))  {
+        // Если нажата кнопка "Удалить курс в корзину".
+        $transformer = new CourseTransformer($course, true);
+        $str_starting = 'deletingcourse';
+        $str_done = 'deletedcourse';
+    } elseif (isset($data->submit_unsubscribe)) {
+        // Если нажата кнопка "Отписаться от этого курса".
+        $transformer = new CourseTransformerUnenrolSelf($course, true);
+        $str_starting = 'unsubscribedfromcourse';
+        $str_done = 'unsubscribingfromcourse';
+    }
+
+    $strdeletingcourse = get_string($str_starting, 'local_course_trash') . $course->shortname;
     // $categoryurl = new moodle_url('/course/index.php', ['categoryid' => $course->category]);
     // $course_url = new moodle_url('/course/view.php', ['id' => $course->id]);
     $home_url = new moodle_url('/');
-    $PAGE->navbar->add($strrestoringcourse);
-    $PAGE->set_title("$SITE->shortname: $strrestoringcourse");
+    $PAGE->navbar->add($strdeletingcourse);
+    $PAGE->set_title("$SITE->shortname: $strdeletingcourse");
     $PAGE->set_heading($SITE->fullname);
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($strrestoringcourse);
+    echo $OUTPUT->heading($strdeletingcourse);
     // This might take a while. Raise the execution time limit.
     core_php_time_limit::raise();
     // We do this here because it splits out feedback as it goes.
     // local_course_trash_trash_course($course);
 
-    $transformer = new CourseTransformer($course, true);
     $transformer->transform_course();
 
     // echo $transformer->log_text;
 
-    echo $OUTPUT->heading(get_string("deletedcourse", "local_course_trash") . $course->shortname);
+    echo $OUTPUT->heading(get_string($str_done, 'local_course_trash') . $course->shortname);
     // Update course count in categories.
     // fix_course_sortorder();
     echo $OUTPUT->continue_button($home_url);
@@ -101,7 +113,16 @@ if ($form->is_cancelled()) {
 } else {
     // If it was the first time.
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('course_trash', 'local_course_trash'));
+
+    // Choose caption for form depending on $USER's capability.
+    if (has_capability('local/course_trash:manage', $context)) {
+        $str_heading = 'course_trash';
+    } elseif (has_capability('local/course_trash:unsubscribe', $context)) {
+        $str_heading = 'unsubscribe';
+    }
+
+    // Show caption & form.
+    echo $OUTPUT->heading(get_string($str_heading, 'local_course_trash'));
     $form->display();
     echo $OUTPUT->footer();
 }

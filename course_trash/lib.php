@@ -60,5 +60,22 @@ function local_course_trash_extend_navigation_course($navigation, $course, $cont
         $url = new moodle_url($base_url, ['id' => $course->id]);
         $name = get_string($menuitem_string_id, 'local_course_trash');
         $navigation->add($name, $url, navigation_node::TYPE_SETTING, null, null, new pix_icon($pix, ''));
+
+    } elseif (has_capability('local/course_trash:unsubscribe', $context)) {
+
+        $can_trash = ! local_course_trash_is_course_trashed($course);
+
+        if ($can_trash) {
+            $base_url = '/local/course_trash/course_trash.php';
+            $menuitem_string_id = 'unsubscribe';
+            // $pix = 'i/permissionlock';
+            $pix = 't/unlocked';
+
+            $url = new moodle_url($base_url, ['id' => $course->id]);
+            $name = get_string($menuitem_string_id, 'local_course_trash');
+            $navigation->add($name, $url, navigation_node::TYPE_SETTING, null, null, new pix_icon($pix, ''));
+        } else {
+            // Do not show menu entry.
+        }
     }
 }

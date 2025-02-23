@@ -34,4 +34,13 @@ $capabilities = [
                 'manager' => CAP_ALLOW,
             ],
     ],
+    'local/course_trash:unsubscribe' => [
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_COURSE,
+            'archetypes' => [
+                'teacher' => CAP_ALLOW,
+                'editingteacher' => CAP_ALLOW,
+                'manager' => CAP_ALLOW,
+            ],
+    ],
 ];
