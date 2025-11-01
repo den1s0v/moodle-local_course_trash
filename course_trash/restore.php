@@ -33,6 +33,9 @@ use local_course_trash\CourseTransformer;
 
 $id = required_param('id', PARAM_INT);
 
+// A teacher previously enrolled in the course has currently no acces to the course.
+require_login();
+
 // Perform some basic access control checks.
 if ($id) {
     if ($id == SITEID) {
@@ -42,16 +45,16 @@ if ($id) {
     if (!$course = get_course($id)) {
         throw new moodle_exception('invalidcourseid');
     }
-    require_login($course);
 
     if ( ! local_course_trash_enabled()) {
         print_error('function is not avaiable', 'local_course_trash', $CFG->wwwroot.'/course/view.php?id='.$course->id);
     }
 
-    $context = context_course::instance($course->id);
-    require_capability('local/course_trash:manage', $context);
+    // Don't check for rights. 
+    // If someone has found the course in the trash, they are assumed to know what they do.
+    // $context = context_course::instance($course->id);
+    // require_capability('local/course_trash:manage', $context);
 } else {
-    require_login();
     throw new moodle_exception('needcourseid');
 }
 
