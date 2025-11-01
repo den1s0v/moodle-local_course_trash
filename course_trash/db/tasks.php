@@ -15,17 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Definition of local_course_trash scheduled tasks.
  *
  * @package   local_course_trash
- * @copyright 2021, Marcelo A. Rauh Schmitt <marcelo.rauh@gmail.com>
+ * @copyright 2024 Mikhail Denisov, Volgograd State Technical University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_course_trash';  // Recommended since 2.0.2 (MDL-26035). Required since 3.0 (MDL-48494).
-$plugin->version = 2025110100;  // YYYYMMDDHH (year, month, day, 24-hr time).
-$plugin->requires = 2019111800;
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '3.0';
+$tasks = [
+    [
+        'classname' => 'local_course_trash\task\delete_expired_courses',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+];
+

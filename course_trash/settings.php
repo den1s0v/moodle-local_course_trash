@@ -73,11 +73,17 @@ if ($hassiteconfig) {
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/set_enddate',
         get_string('set_enddate', 'local_course_trash'), '[EXPERIMENTAL FEATURE!] ' . get_string('set_enddate_help', 'local_course_trash'), 0));
 
+    $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/renamecourse',
+        get_string('renamecourse', 'local_course_trash'), get_string('renamecourse_help', 'local_course_trash'), 1));
+
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/saverestoredata',
         get_string('saverestoredata', 'local_course_trash'), get_string('saverestoredata_help', 'local_course_trash'), 1));
 
 
     $settings->add(new admin_setting_heading('local_course_trash_settings_heading3', get_string('heading_developer', 'local_course_trash'), get_string('heading_developer_info', 'local_course_trash')));
+
+    $settings->add($setting = new admin_setting_configduration('local_course_trash/retention_days',
+        get_string('retention_days', 'local_course_trash'), get_string('retention_days_help', 'local_course_trash'), 40 * 24 * 60 * 60));
 
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/verbose_logging',
         get_string('verbose_logging', 'local_course_trash'), get_string('verbose_logging_help', 'local_course_trash'), 0));

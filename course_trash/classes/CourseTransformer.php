@@ -175,9 +175,15 @@ class CourseTransformer {
         if ($all || get_config('local_course_trash', 'set_enddate')) {
             $transformations []= new TransformationSetEndDate();
         }
+        if ($all || get_config('local_course_trash', 'renamecourse')) {
+            $transformations []= new TransformationRenameCourse();
+        }
         if ($all || get_config('local_course_trash', 'saverestoredata')) {
             $transformations []= new TransformationKeepRestoreInfo();
         }
+
+        // Always save to database (must be last to record final state).
+        $transformations []= new TransformationSaveToDatabase();
 
 
         return $transformations;

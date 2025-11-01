@@ -72,3 +72,10 @@ $string['saverestoredata_help'] = 'If disabled, data about the original location
 
 $string['verbose_logging']        = 'Verbose logging';
 $string['verbose_logging_help']   = 'Display messages about actions completed and/or problems encountered.';
+
+$string['course_suffix']          = ' (to be deleted)';
+$string['renamecourse']           = 'Rename course';
+$string['renamecourse_help']      = 'Add suffix " (to be deleted)" to the course short name, full name, and ID number';
+$string['retention_days']         = 'Retention period in trash';
+$string['retention_days_help']    = 'Time period a deleted course is kept in trash before permanent deletion. Default is 40 days.';
+$string['task_delete_expired']    = 'Delete courses with expired retention period';
