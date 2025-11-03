@@ -49,16 +49,32 @@ class TransformationRenameCourse extends Transformation {
             // При удалении: получить суффикс из языкового файла и сохранить его.
             $suffix = get_string('course_suffix', 'local_course_trash');
 
-            // Сохранить оригинальные значения.
-            $course_transformer->data['to_keep']['shortname'] = $course_transformer->course->shortname;
-            $course_transformer->data['to_keep']['fullname'] = $course_transformer->course->fullname;
-            $course_transformer->data['to_keep']['idnumber'] = $course_transformer->course->idnumber;
+            // Сохранить оригинальные значения один раз (не перезаписывать при повторных вызовах).
+            if (!isset($course_transformer->data['to_keep']['shortname'])) {
+                $course_transformer->data['to_keep']['shortname'] = $course_transformer->course->shortname;
+            }
+            if (!isset($course_transformer->data['to_keep']['fullname'])) {
+                $course_transformer->data['to_keep']['fullname'] = $course_transformer->course->fullname;
+            }
+            if (!isset($course_transformer->data['to_keep']['idnumber'])) {
+                $course_transformer->data['to_keep']['idnumber'] = $course_transformer->course->idnumber;
+            }
             $course_transformer->data['to_keep']['rename_suffix'] = $suffix;
 
-            // Применить суффикс к именам курса.
-            $course_transformer->changed_fields['shortname'] = $course_transformer->course->shortname . $suffix;
-            $course_transformer->changed_fields['fullname'] = $course_transformer->course->fullname . $suffix;
-            if (!empty($course_transformer->course->idnumber)) {
+            // Идемпотентная проверка: не добавлять суффикс повторно.
+            $suffixlen = strlen($suffix);
+            $has_suffix_short = $suffixlen > 0 && substr($course_transformer->course->shortname, -$suffixlen) === $suffix;
+            $has_suffix_full = $suffixlen > 0 && substr($course_transformer->course->fullname, -$suffixlen) === $suffix;
+            $has_suffix_idn = $suffixlen > 0 && !empty($course_transformer->course->idnumber)
+                && substr($course_transformer->course->idnumber, -$suffixlen) === $suffix;
+
+            if (!$has_suffix_short) {
+                $course_transformer->changed_fields['shortname'] = $course_transformer->course->shortname . $suffix;
+            }
+            if (!$has_suffix_full) {
+                $course_transformer->changed_fields['fullname'] = $course_transformer->course->fullname . $suffix;
+            }
+            if (!empty($course_transformer->course->idnumber) && !$has_suffix_idn) {
                 $course_transformer->changed_fields['idnumber'] = $course_transformer->course->idnumber . $suffix;
             }
 

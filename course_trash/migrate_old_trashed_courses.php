@@ -28,8 +28,11 @@
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->dirroot.'/local/course_trash/locallib.php');
 require_once($CFG->dirroot.'/local/course_trash/classes/TransformationKeepRestoreInfo.php');
+require_once($CFG->dirroot.'/local/course_trash/classes/TransformationRenameCourse.php');
+require_once($CFG->dirroot.'/course/lib.php');
 
 use local_course_trash\TransformationKeepRestoreInfo;
+use local_course_trash\TransformationRenameCourse;
 
 // Security check.
 require_login();
@@ -149,6 +152,39 @@ foreach ($courses as $course) {
         
         $DB->insert_record('local_course_trash', $record);
         
+        // Optionally apply rename transformation after saving original names.
+        $should_rename = (int)get_config('local_course_trash', 'renamecourse') === 1;
+        if ($should_rename) {
+            // Idempotent guard: skip if already renamed (has suffix at the end).
+            $suffix = get_string('course_suffix', 'local_course_trash');
+            $has_suffix_short = $suffix !== '' && substr($course->shortname, -strlen($suffix)) === $suffix;
+            $has_suffix_full = $suffix !== '' && substr($course->fullname, -strlen($suffix)) === $suffix;
+
+            if (!($has_suffix_short || $has_suffix_full)) {
+                // Build a minimal transformer-like context.
+                $ctx = (object)[
+                    'course' => $course,
+                    'is_trashing' => true,
+                    'changed_fields' => [],
+                    'data' => ['to_keep' => [], 'restored' => []],
+                ];
+
+                // Apply rename transformation to fill changed_fields.
+                $rename = new TransformationRenameCourse();
+                $rename->apply($ctx);
+
+                if (!empty($ctx->changed_fields)) {
+                    $fields_to_save = ['id' => $course->id] + $ctx->changed_fields;
+                    update_course((object)$fields_to_save);
+
+                    // Update local $course to reflect renamed values for subsequent checks/logs.
+                    foreach ($ctx->changed_fields as $k => $v) {
+                        $course->$k = $v;
+                    }
+                }
+            }
+        }
+
         echo '<span style="color: green;">OK</span></p>';
         $processed++;
         
