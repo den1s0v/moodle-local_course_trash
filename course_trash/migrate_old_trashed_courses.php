@@ -29,10 +29,12 @@ require_once(__DIR__.'/../../config.php');
 require_once($CFG->dirroot.'/local/course_trash/locallib.php');
 require_once($CFG->dirroot.'/local/course_trash/classes/TransformationKeepRestoreInfo.php');  // TODO: ckeck if really required.
 require_once($CFG->dirroot.'/local/course_trash/classes/TransformationRenameCourse.php');  // TODO: ckeck if really required.
+require_once($CFG->dirroot.'/local/course_trash/classes/TransformationSaveToDatabase.php');  // For status constants.
 require_once($CFG->dirroot.'/course/lib.php');
 
 use local_course_trash\TransformationKeepRestoreInfo;
 use local_course_trash\TransformationRenameCourse;
+use local_course_trash\TransformationSaveToDatabase;
 
 // Security check.
 require_login();
@@ -146,7 +148,7 @@ foreach ($courses as $course) {
         $record->idnumber = $course->idnumber;
         $record->category = $original_category;
         $record->userid = 0; // Unknown for old courses.
-        $record->status = \local_course_trash\STATUS_IN_TRASH;
+        $record->status = TransformationSaveToDatabase::STATUS_IN_TRASH;
         $record->timetrashed = $timetrashed;
         $record->timedeleted = null;
         

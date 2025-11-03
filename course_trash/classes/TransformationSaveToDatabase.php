@@ -28,16 +28,18 @@ namespace local_course_trash;
 defined('MOODLE_INTERNAL') || die();
 
 
-// Status constants.
-const STATUS_IN_TRASH = 0;
-const STATUS_DELETED = 1;
-const STATUS_RESTORED = 2;
+// Status constants are defined as class constants below.
 
 
 /**
  * Class for saving course information to database when trashing/restoring.
  */
 class TransformationSaveToDatabase extends Transformation {
+
+    // Status constants.
+    public const STATUS_IN_TRASH = 0;
+    public const STATUS_DELETED = 1;
+    public const STATUS_RESTORED = 2;
 
     public function get_name(): string {
         return 'Save to database';
@@ -55,7 +57,7 @@ class TransformationSaveToDatabase extends Transformation {
 
             // Check if record already exists for this course.
             $existing = $DB->get_record('local_course_trash',
-                ['courseid' => $course_transformer->course->id, 'status' => STATUS_IN_TRASH]);
+                ['courseid' => $course_transformer->course->id, 'status' => self::STATUS_IN_TRASH]);
 
             if ($existing) {
                 // Update existing record.
@@ -76,7 +78,7 @@ class TransformationSaveToDatabase extends Transformation {
                 $record->idnumber = $course_transformer->course->idnumber;
                 $record->category = $course_transformer->course->category;
                 $record->userid = $USER->id;
-                $record->status = STATUS_IN_TRASH;
+                $record->status = self::STATUS_IN_TRASH;
                 $record->timetrashed = time();
                 $record->timedeleted = null;
 
@@ -88,12 +90,12 @@ class TransformationSaveToDatabase extends Transformation {
 
             // Find the most recent trash record for this course.
             $records = $DB->get_records('local_course_trash',
-                ['courseid' => $course_transformer->course->id, 'status' => STATUS_IN_TRASH],
+                ['courseid' => $course_transformer->course->id, 'status' => self::STATUS_IN_TRASH],
                 'timetrashed DESC', '*', 0, 1);
 
             if (!empty($records)) {
                 $record = reset($records);
-                $record->status = STATUS_RESTORED;
+                $record->status = self::STATUS_RESTORED;
                 $DB->update_record('local_course_trash', $record);
             }
         }
