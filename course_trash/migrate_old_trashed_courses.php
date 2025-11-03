@@ -27,8 +27,8 @@
 
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->dirroot.'/local/course_trash/locallib.php');
-require_once($CFG->dirroot.'/local/course_trash/classes/TransformationKeepRestoreInfo.php');
-require_once($CFG->dirroot.'/local/course_trash/classes/TransformationRenameCourse.php');
+require_once($CFG->dirroot.'/local/course_trash/classes/TransformationKeepRestoreInfo.php');  // TODO: ckeck if really required.
+require_once($CFG->dirroot.'/local/course_trash/classes/TransformationRenameCourse.php');  // TODO: ckeck if really required.
 require_once($CFG->dirroot.'/course/lib.php');
 
 use local_course_trash\TransformationKeepRestoreInfo;
