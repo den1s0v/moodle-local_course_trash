@@ -74,6 +74,8 @@ $string['verbose_logging']        = 'Подробное логгирование
 $string['verbose_logging_help']   = 'Выводить на экран сообщения о выполненных действиях и/или проблемах.';
 
 $string['course_suffix']          = ' (на удаление)';
+$string['course_restored_suffix'] = ' (восстановленный)';
+$string['course_restored_suffix_num'] = ' (восстановленный {$a})';
 $string['renamecourse']           = 'Переименовать курс';
 $string['renamecourse_help']      = 'Добавить суффикс " (на удаление)" к короткому имени, полному имени и идентификатору курса';
 $string['retention_days']         = 'Срок хранения в корзине';

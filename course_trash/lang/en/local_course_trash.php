@@ -74,6 +74,8 @@ $string['verbose_logging']        = 'Verbose logging';
 $string['verbose_logging_help']   = 'Display messages about actions completed and/or problems encountered.';
 
 $string['course_suffix']          = ' (to be deleted)';
+$string['course_restored_suffix'] = ' (restored)';
+$string['course_restored_suffix_num'] = ' (restored {$a})';
 $string['renamecourse']           = 'Rename course';
 $string['renamecourse_help']      = 'Add suffix " (to be deleted)" to the course short name, full name, and ID number';
 $string['retention_days']         = 'Retention period in trash';

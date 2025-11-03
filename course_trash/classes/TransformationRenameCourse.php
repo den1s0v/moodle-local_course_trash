@@ -79,22 +79,97 @@ class TransformationRenameCourse extends Transformation {
             }
 
         } else {
-            // При восстановлении: вернуть оригинальные значения.
+            // При восстановлении: вернуть оригинальные значения и обработать коллизии имён.
             $restored_data = &$course_transformer->data['restored'];
 
-            // Восстановить оригинальные значения, если они были сохранены.
-            if (array_key_exists('shortname', $restored_data)) {
-                $course_transformer->changed_fields['shortname'] = $restored_data['shortname'];
+            $suffix_delete = get_string('course_suffix', 'local_course_trash');
+            $suffix_restore = get_string('course_restored_suffix', 'local_course_trash');
+            $course = $course_transformer->course;
+
+            // Базовые значения (предпочтительно из сохранённых данных), без суффикса удаления.
+            $base_short = array_key_exists('shortname', $restored_data) ? $restored_data['shortname'] : $course->shortname;
+            $base_full  = array_key_exists('fullname', $restored_data) ? $restored_data['fullname'] : $course->fullname;
+            $base_idn   = array_key_exists('idnumber', $restored_data) ? $restored_data['idnumber'] : $course->idnumber;
+
+            $base_short = self::strip_suffix($base_short, $suffix_delete);
+            $base_full  = self::strip_suffix($base_full,  $suffix_delete);
+            if (!empty($base_idn)) {
+                $base_idn   = self::strip_suffix($base_idn,   $suffix_delete);
             }
-            if (array_key_exists('fullname', $restored_data)) {
-                $course_transformer->changed_fields['fullname'] = $restored_data['fullname'];
+
+            // Проверка занятости shortname и idnumber (кроме текущего курса).
+            $need_unique_suffix = false;
+            if (self::exists_course_with_field('shortname', $base_short, $course->id)) {
+                $need_unique_suffix = true;
             }
-            if (array_key_exists('idnumber', $restored_data)) {
-                $course_transformer->changed_fields['idnumber'] = $restored_data['idnumber'];
+            elseif (!empty($base_idn) && self::exists_course_with_field('idnumber', $base_idn, $course->id)) {
+                $need_unique_suffix = true;
+            }
+
+            if ($need_unique_suffix) {
+                // Попытаться с суффиксом восстановления, затем с нумерацией.
+                [$new_short, $new_full, $new_idn] = self::generate_unique_triplet($base_short, $base_full, $base_idn, $course->id, $suffix_restore);
+
+                $course_transformer->changed_fields['shortname'] = $new_short;
+                $course_transformer->changed_fields['fullname']  = $new_full;
+                if (!empty($base_idn)) {
+                    $course_transformer->changed_fields['idnumber'] = $new_idn;
+                }
+            } else {
+                // Нет конфликтов — просто вернуть базовые значения.
+                $course_transformer->changed_fields['shortname'] = $base_short;
+                $course_transformer->changed_fields['fullname']  = $base_full;
+                if (!empty($base_idn)) {
+                    $course_transformer->changed_fields['idnumber'] = $base_idn;
+                }
             }
         }
 
         return true;  // Success.
+    }
+    
+    /**
+     * Strip suffix from value. If suffix is not found, return original value.
+     * @param string $value
+     * @param string $suffix
+     * @return string
+     */
+    private static function strip_suffix($value, $suffix) {
+        if ($suffix === '') {
+            return $value;
+        }
+        $len = strlen($suffix);
+        if ($len > 0 && substr($value, -$len) === $suffix) {
+            return substr($value, 0, -$len);
+        }
+        return $value;
+    }
+
+    private static function exists_course_with_field($field, $value, $excludeid) {
+        global $DB;
+        if ($value === '' || $value === null) {
+            return false;
+        }
+        $sql = "SELECT 1 FROM {course} WHERE $field = :v AND id <> :id";
+        return $DB->record_exists_sql($sql, ['v' => $value, 'id' => $excludeid]);
+    }
+
+    private static function generate_unique_triplet($base_short, $base_full, $base_idn, $excludeid, $restoresuffix) {
+        $candidate_short = $base_short . $restoresuffix;
+        $candidate_full  = $base_full  . $restoresuffix;
+        $candidate_idn   = $base_idn   ? $base_idn . $restoresuffix : '';
+
+        $n = 2;
+        while (self::exists_course_with_field('shortname', $candidate_short, $excludeid)
+            || ($candidate_idn !== '' && self::exists_course_with_field('idnumber', $candidate_idn, $excludeid))) {
+            $suffix_num = get_string('course_restored_suffix_num', 'local_course_trash', $n);
+            $candidate_short = $base_short . $suffix_num;
+            $candidate_full  = $base_full  . $suffix_num;
+            $candidate_idn   = $base_idn   ? $base_idn . $suffix_num : '';
+            $n++;
+        }
+
+        return [$candidate_short, $candidate_full, $candidate_idn];
     }
 }
 
