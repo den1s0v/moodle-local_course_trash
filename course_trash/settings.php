@@ -88,5 +88,12 @@ if ($hassiteconfig) {
     $settings->add($setting = new admin_setting_configcheckbox('local_course_trash/verbose_logging',
         get_string('verbose_logging', 'local_course_trash'), get_string('verbose_logging_help', 'local_course_trash'), 0));
 
+    // Cleanup limits.
+    $settings->add($setting = new admin_setting_configduration('local_course_trash/max_runtime_seconds',
+        get_string('max_runtime_seconds', 'local_course_trash'), get_string('max_runtime_seconds_help', 'local_course_trash'), 15 * 60));
+
+    $settings->add($setting = new admin_setting_configtext('local_course_trash/max_delete_per_run',
+        get_string('max_delete_per_run', 'local_course_trash'), get_string('max_delete_per_run_help', 'local_course_trash'), 100, PARAM_INT));
+
 
 }

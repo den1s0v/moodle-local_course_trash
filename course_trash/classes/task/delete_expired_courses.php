@@ -60,8 +60,15 @@ class delete_expired_courses extends \core\task\scheduled_task {
             $retention_seconds = 40 * 24 * 60 * 60; // Default value: 40 days.
         }
 
+        // Limits from settings.
+        $maxruntime = (int)get_config('local_course_trash', 'max_runtime_seconds');
+        if ($maxruntime <= 0) { $maxruntime = 15 * 60; }
+        $maxcount = (int)get_config('local_course_trash', 'max_delete_per_run');
+        if ($maxcount < 0) { $maxcount = 0; }
+
         mtrace('Starting deletion of expired courses...');
         mtrace('Retention period: ' . format_time($retention_seconds));
+        mtrace('Max runtime: ' . format_time($maxruntime) . '; Max per run: ' . ($maxcount ? $maxcount : 'no limit'));
 
         // Calculate timestamp for expiration.
         $expiration_time = time() - $retention_seconds;
@@ -72,7 +79,8 @@ class delete_expired_courses extends \core\task\scheduled_task {
                 FROM {local_course_trash} lct
                 LEFT JOIN {course} c ON c.id = lct.courseid
                 WHERE lct.status = :status
-                AND lct.timetrashed < :expiration_time";
+                AND lct.timetrashed < :expiration_time
+                ORDER BY lct.timetrashed ASC";
 
         $params = [
             'status' => 0, // STATUS_IN_TRASH
@@ -90,8 +98,19 @@ class delete_expired_courses extends \core\task\scheduled_task {
 
         $deleted_count = 0;
         $error_count = 0;
+        $starttime = time();
 
         foreach ($expired_records as $record) {
+            // Stop if time limit reached.
+            if ((time() - $starttime) >= $maxruntime) {
+                mtrace('Time limit reached, stopping further deletions.');
+                break;
+            }
+            // Stop if count limit reached (when > 0).
+            if ($maxcount > 0 && $deleted_count >= $maxcount) {
+                mtrace('Count limit reached (' . $maxcount . '), stopping further deletions.');
+                break;
+            }
             try {
                 // Check if course still exists in the database.
                 if ($record->course_exists) {

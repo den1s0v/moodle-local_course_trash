@@ -81,3 +81,9 @@ $string['renamecourse_help']      = 'Add suffix " (to be deleted)" to the course
 $string['retention_days']         = 'Retention period in trash';
 $string['retention_days_help']    = 'Time period a deleted course is kept in trash before permanent deletion. Default is 40 days.';
 $string['task_delete_expired']    = 'Delete courses with expired retention period';
+
+// Cleanup limits settings.
+$string['max_runtime_seconds']      = 'Max runtime for nightly cleanup';
+$string['max_runtime_seconds_help'] = 'Maximum duration for a single run of the scheduled cleanup task. Default: 15 minutes (900 seconds).';
+$string['max_delete_per_run']       = 'Max courses to delete per run';
+$string['max_delete_per_run_help']  = 'Upper bound for number of courses permanently deleted in a single run. Set 0 for no limit.';
