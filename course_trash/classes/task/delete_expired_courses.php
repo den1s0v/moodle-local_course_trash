@@ -27,6 +27,7 @@ namespace local_course_trash\task;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/lib.php');
+require_once($CFG->dirroot . '/local/course_trash/classes/TransformationSaveToDatabase.php');
 
 /**
  * Scheduled task class for deleting expired courses from trash.
@@ -83,7 +84,7 @@ class delete_expired_courses extends \core\task\scheduled_task {
                 ORDER BY lct.timetrashed ASC";
 
         $params = [
-            'status' => 0, // STATUS_IN_TRASH
+            'status' => \local_course_trash\TransformationSaveToDatabase::STATUS_IN_TRASH,
             'expiration_time' => $expiration_time
         ];
 
@@ -129,7 +130,7 @@ class delete_expired_courses extends \core\task\scheduled_task {
                 }
 
                 // Update the record status to "deleted".
-                $record->status = 1; // STATUS_DELETED
+                $record->status = \local_course_trash\TransformationSaveToDatabase::STATUS_DELETED;
                 $record->timedeleted = time();
                 $DB->update_record('local_course_trash', $record);
 
